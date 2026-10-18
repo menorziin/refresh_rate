@@ -39,11 +39,11 @@ object RefreshRate {
             .ifEmpty { listOf(60, 90, 120) }
     }
 
-    /** Fixas primeiro (60, 90, 120), depois as dinâmicas (60–90, 60–120). */
+    /** Taxas fixas (60, 90, 120) e um modo dinâmico da menor à maior (60–120). */
     fun presets(ctx: Context): List<Preset> {
         val rates = supported(ctx)
-        val low = rates.first()
-        return rates.map { Preset(it, it) } + rates.drop(1).map { Preset(low, it) }
+        val fixed = rates.map { Preset(it, it) }
+        return if (rates.size > 1) fixed + Preset(rates.first(), rates.last()) else fixed
     }
 
     fun current(ctx: Context): Int = display(ctx).refreshRate.roundToInt()

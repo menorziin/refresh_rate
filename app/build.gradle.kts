@@ -4,6 +4,10 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+// Assinatura: o workflow do GitHub Actions passa a keystore por variáveis de ambiente
+// (vindas dos Secrets). Sem elas, o build release cai na chave de debug.
+val signingStoreFile: String? = System.getenv("SIGNING_STORE_FILE")
+
 android {
     namespace = "com.marble.refreshrate"
     compileSdk = 34
@@ -12,8 +16,28 @@ android {
         applicationId = "com.marble.refreshrate"
         minSdk = 31
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.1"
+        versionCode = 3
+        versionName = "1.0"
+    }
+
+    signingConfigs {
+        if (signingStoreFile != null) {
+            create("release") {
+                storeFile = file(signingStoreFile)
+                storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+                keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+                keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
+        }
     }
 
     buildFeatures { compose = true }

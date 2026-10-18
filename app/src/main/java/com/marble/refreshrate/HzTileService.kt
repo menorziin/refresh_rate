@@ -7,7 +7,7 @@ import android.service.quicksettings.TileService
 
 /**
  * Bloco das Configurações Rápidas: mostra o preset ativo e, a cada toque,
- * avança para o próximo (60 → 90 → 120 → 60–90 → 60–120).
+ * avança para o próximo (60 → 90 → 120 → 60–120).
  */
 class HzTileService : TileService() {
 

@@ -1,0 +1,27 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Esfera ("marble") -->
+    <path
+        android:fillColor="#33FFFFFF"
+        android:pathData="M54,29a25,25 0 1,1 0,50a25,25 0 1,1 0,-50z" />
+    <path
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="3"
+        android:pathData="M54,29a25,25 0 1,1 0,50a25,25 0 1,1 0,-50z" />
+    <!-- Brilho -->
+    <path
+        android:strokeColor="#99FFFFFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M40,44a17,17 0 0,1 10,-8" />
+    <!-- Pulso da taxa de atualização -->
+    <path
+        android:strokeColor="#FF9DB8FF"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M35,57h8l4,-9l7,17l6,-13l3,5h10" />
+</vector>
