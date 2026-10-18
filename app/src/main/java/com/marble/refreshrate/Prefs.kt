@@ -5,9 +5,9 @@ import android.content.Context
 class Prefs(ctx: Context) {
     private val sp = ctx.getSharedPreferences("hz", Context.MODE_PRIVATE)
 
-    var lastHz: Int
-        get() = sp.getInt("last_hz", -1)
-        set(v) = sp.edit().putInt("last_hz", v).apply()
+    var last: Preset?
+        get() = Preset.fromId(sp.getString("last_preset", null))
+        set(v) = sp.edit().putString("last_preset", v?.id).apply()
 
     var applyOnBoot: Boolean
         get() = sp.getBoolean("boot", true)

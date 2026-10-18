@@ -1,34 +1,45 @@
 package com.marble.refreshrate
 
+import android.os.Handler
+import android.os.Looper
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 
-/** Tile das Configurações Rápidas: cada toque avança para a próxima taxa suportada. */
+/**
+ * Bloco das Configurações Rápidas: mostra o preset ativo e, a cada toque,
+ * avança para o próximo (60 → 90 → 120 → 60–90 → 60–120).
+ */
 class HzTileService : TileService() {
+
+    private val main = Handler(Looper.getMainLooper())
 
     override fun onStartListening() = refresh()
 
     override fun onClick() {
-        val rates = RefreshRate.supported(this)
+        val presets = RefreshRate.presets(this)
         val prefs = Prefs(this)
-        val now = prefs.lastHz.takeIf { it in rates } ?: RefreshRate.current(this)
-        val next = rates[(rates.indexOf(now) + 1) % rates.size]
+        val now = prefs.last ?: RefreshRate.current(this).let { Preset(it, it) }
+        val next = presets[(presets.indexOf(now) + 1) % presets.size]
 
+        // Mostra o novo valor na hora, antes mesmo do root responder.
+        show(next.label)
         Thread {
-            if (RefreshRate.apply(this, next, prefs.forceSf).isSuccess) {
-                prefs.lastHz = next
-            }
-            Thread.sleep(300) // dá tempo do painel trocar antes de ler o valor
-            refresh()
+            val ok = RefreshRate.apply(this, next, prefs.forceSf).isSuccess
+            main.post { if (ok) refresh() else show("Erro (root?)") }
         }.start()
     }
 
     private fun refresh() {
+        val preset = Prefs(this).last
+        show(preset?.label ?: "${RefreshRate.current(this)} Hz")
+    }
+
+    private fun show(label: String) {
         val tile = qsTile ?: return
-        val hz = RefreshRate.current(this)
         tile.state = Tile.STATE_ACTIVE
-        tile.label = "$hz Hz"
+        tile.label = label
         tile.subtitle = "Taxa de atualização"
+        tile.contentDescription = "Taxa de atualização: $label"
         tile.updateTile()
     }
 }

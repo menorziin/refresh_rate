@@ -38,10 +38,10 @@ private fun HzScreen() {
     val ctx = LocalContext.current
     val prefs = remember { Prefs(ctx) }
     val scope = rememberCoroutineScope()
-    val rates = remember { RefreshRate.supported(ctx) }
+    val presets = remember { RefreshRate.presets(ctx) }
 
     var current by remember { mutableIntStateOf(RefreshRate.current(ctx)) }
-    var selected by remember { mutableIntStateOf(prefs.lastHz) }
+    var selected by remember { mutableStateOf(prefs.last) }
     var hasRoot by remember { mutableStateOf<Boolean?>(null) }
     var busy by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf<String?>(null) }
@@ -62,16 +62,23 @@ private fun HzScreen() {
         onDispose { dm.unregisterDisplayListener(listener) }
     }
 
-    fun choose(hz: Int) {
+    fun choose(preset: Preset) {
         if (busy) return
         busy = true
         scope.launch {
-            val result = withContext(Dispatchers.IO) { RefreshRate.apply(ctx, hz, forceSf) }
+            val result = withContext(Dispatchers.IO) { RefreshRate.apply(ctx, preset, forceSf) }
             busy = false
-            result.onSuccess {
-                selected = hz; prefs.lastHz = hz; message = null
-            }.onFailure { message = "Falhou: ${it.message}" }
+            result.onSuccess { selected = preset; message = null }
+                .onFailure { message = "Falhou: ${it.message}" }
         }
+    }
+
+    @Composable
+    fun PresetButton(preset: Preset, modifier: Modifier) {
+        val enabled = hasRoot == true && !busy
+        val content: @Composable RowScope.() -> Unit = { Text(preset.label, maxLines = 1) }
+        if (preset == selected) Button({ choose(preset) }, modifier.height(56.dp), enabled = enabled, content = content)
+        else OutlinedButton({ choose(preset) }, modifier.height(56.dp), enabled = enabled, content = content)
     }
 
     Column(
@@ -81,9 +88,12 @@ private fun HzScreen() {
         Text("Hz Switcher", style = MaterialTheme.typography.headlineMedium)
 
         Card(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Text("Agora", style = MaterialTheme.typography.labelLarge)
                 Text("$current Hz", fontSize = 56.sp, fontWeight = FontWeight.Bold)
+                selected?.takeIf { it.isDynamic }?.let {
+                    Text("Modo dinâmico ${it.label}", style = MaterialTheme.typography.bodyMedium)
+                }
                 Text(
                     when (hasRoot) {
                         null -> "Verificando root…"
@@ -97,17 +107,14 @@ private fun HzScreen() {
             }
         }
 
-        val options = rates + HZ_DYNAMIC
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            options.forEach { hz ->
-                val label = if (hz == HZ_DYNAMIC) "Dinâmico (${rates.first()}–${rates.last()} Hz)" else "$hz Hz"
-                val isSel = hz == selected
-                if (isSel) {
-                    Button({ choose(hz) }, Modifier.fillMaxWidth().height(56.dp), enabled = hasRoot == true && !busy) { Text(label) }
-                } else {
-                    OutlinedButton({ choose(hz) }, Modifier.fillMaxWidth().height(56.dp), enabled = hasRoot == true && !busy) { Text(label) }
-                }
-            }
+        Text("Fixo", style = MaterialTheme.typography.titleSmall)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            presets.filterNot { it.isDynamic }.forEach { PresetButton(it, Modifier.weight(1f)) }
+        }
+
+        Text("Dinâmico", style = MaterialTheme.typography.titleSmall)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            presets.filter { it.isDynamic }.forEach { PresetButton(it, Modifier.weight(1f)) }
         }
 
         SettingRow("Reaplicar ao reiniciar", applyOnBoot) { applyOnBoot = it; prefs.applyOnBoot = it }
