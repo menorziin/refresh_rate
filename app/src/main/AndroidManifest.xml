@@ -4,9 +4,10 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        android:label="Refresh Rate"
+        android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
+        android:localeConfig="@xml/locales_config"
         android:theme="@android:style/Theme.Material.NoActionBar">
 
         <activity
@@ -23,7 +24,7 @@
             android:name=".HzTileService"
             android:exported="true"
             android:icon="@drawable/ic_hz"
-            android:label="Taxa de atualização"
+            android:label="@string/tile_label"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />

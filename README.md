@@ -1,87 +1,93 @@
 <p align="center">
   <b>Refresh Rate</b><br>
-  Troque a taxa de atualização da tela entre 60, 90 e 120 Hz com um toque.
+  Switch your screen between 60, 90 and 120 Hz with a single tap.
+</p>
+
+<p align="center">
+  <b>English</b> · <a href="README.pt-BR.md">Português (Brasil)</a>
 </p>
 
 ---
 
-O **Refresh Rate** é um app Android para quem tem root e quer controlar a taxa de atualização da tela com um toque. Ele lê as taxas que o próprio painel suporta, então não depende de um aparelho específico.
+**Refresh Rate** is a root app for Android that lets you control the display refresh rate with one tap. It reads the rates your panel actually supports, so it isn't tied to a specific device.
 
-## Compatibilidade
+## Compatibility
 
 | ROM | Status |
 | --- | --- |
-| AOSP e ROMs baseadas em AOSP | ✅ Funciona |
-| HyperOS / MIUI | ⚠️ Não testado |
-| Outras ROMs de fabricante (One UI, ColorOS etc.) | ⚠️ Não testado |
+| AOSP and AOSP-based ROMs | ✅ Works |
+| HyperOS / MIUI | ⚠️ Untested |
+| Other OEM ROMs (One UI, ColorOS, etc.) | ⚠️ Untested |
 
-Testado em um Poco F5 com ROM AOSP. Em ROMs de fabricante, o sistema pode ignorar ou sobrescrever a taxa escolhida. Se testar em alguma, abra uma issue contando o resultado.
+Tested on a Poco F5 running an AOSP ROM. On OEM ROMs the system may ignore or override the chosen rate. If you try it on one, please open an issue with the result.
 
-## Recursos
+## Features
 
-- **Taxas fixas**: 60, 90 ou 120 Hz, conforme o que o painel suporta.
-- **Modo dinâmico**: o sistema varia entre a menor e a maior taxa conforme o uso.
-- **Bloco nas Configurações Rápidas**: mostra a taxa ativa e alterna a cada toque, sem abrir o app.
-- **Reaplicar ao reiniciar**: restaura a última escolha depois do boot.
-- **Forçar via SurfaceFlinger** (experimental): trava o modo direto no compositor quando o sistema insiste em voltar para outra taxa.
-- Material You, tema claro/escuro e ícone temático.
+- **Fixed rates**: 60, 90 or 120 Hz, depending on what the panel supports.
+- **Dynamic mode**: the system moves between the lowest and highest rate as needed.
+- **Quick Settings tile**: shows the active rate on its icon and cycles through rates on each tap.
+- **Battery saver aware**: shows when battery saver is capping the rate, both in the app and on the tile.
+- **Reapply on boot**: restores your last choice after a restart.
+- **Force via SurfaceFlinger** (experimental): locks the mode directly in the compositor when the system keeps switching it back.
+- English and Portuguese (Brazil), with per-app language on Android 13+.
+- Material You, light/dark theme and themed icon.
 
-## Requisitos
+## Requirements
 
-- Android 12 ou superior
-- Root (Magisk, KernelSU ou APatch)
+- Android 12 or newer
+- Root (Magisk, KernelSU or APatch)
 
-## Instalação
+## Installation
 
-1. Baixe o APK mais recente em [Releases](../../releases).
-2. Instale e abra o app.
-3. Conceda acesso root quando o gerenciador pedir.
-4. (Opcional) Edite as Configurações Rápidas e adicione o bloco **Taxa de atualização**.
+1. Download the latest APK from [Releases](../../releases).
+2. Install and open it.
+3. Grant root access when your root manager asks.
+4. (Optional) Edit Quick Settings and add the **Refresh rate** tile.
 
-## Como funciona
+## How it works
 
-O app executa comandos via `su` e grava as chaves de taxa do AOSP:
+The app runs commands through `su` and writes the AOSP refresh rate keys:
 
 ```sh
 settings put system min_refresh_rate  <hz>
 settings put system peak_refresh_rate <hz>
 ```
 
-Ele também grava `user_refresh_rate`, chave usada por algumas ROMs de fabricante. No AOSP ela é ignorada; está ali por compatibilidade, sem garantia de funcionar.
+It also writes `user_refresh_rate`, a key used by some OEM ROMs. AOSP ignores it; it's there for compatibility, with no guarantee it works.
 
-No modo **Forçar via SurfaceFlinger**, ele também envia:
-
-```sh
-service call SurfaceFlinger 1035 i32 <índice do modo>
-```
-
-Esse comando é interno e não documentado. O efeito dura até reiniciar e só vale para taxas fixas.
-
-## Compilar
-
-O APK é gerado pelo GitHub Actions a cada push na `main`. Para publicar uma release, crie uma tag `v*`:
+With **Force via SurfaceFlinger** enabled, it also sends:
 
 ```sh
-git tag v1.0 && git push origin v1.0
+service call SurfaceFlinger 1035 i32 <mode index>
 ```
 
-A assinatura usa uma keystore guardada nos Secrets do repositório:
+This is an internal, undocumented call. It lasts until reboot and only applies to fixed rates.
 
-| Secret | Conteúdo |
+## Building
+
+GitHub Actions builds the APK on every push to `main`. To publish a release, create a `v*` tag (or a release with a new `v*` tag on GitHub):
+
+```sh
+git tag v1.1 && git push origin v1.1
+```
+
+Signing uses a keystore stored in the repository Secrets:
+
+| Secret | Content |
 | --- | --- |
-| `KEYSTORE_BASE64` | Keystore `.jks` codificada em base64 |
-| `KEYSTORE_PASSWORD` | Senha da keystore |
-| `KEY_ALIAS` | Alias da chave |
-| `KEY_PASSWORD` | Senha da chave |
+| `KEYSTORE_BASE64` | Base64-encoded `.jks` keystore |
+| `KEYSTORE_PASSWORD` | Keystore password |
+| `KEY_ALIAS` | Key alias |
+| `KEY_PASSWORD` | Key password |
 
-Sem esses Secrets, builds da `main` saem com a chave de debug e builds de tag falham, para que nenhuma release seja publicada com assinatura errada.
+Without these Secrets, `main` builds are signed with the debug key and tag builds fail, so no release is ever published with the wrong signature.
 
-Para compilar localmente, com o Android SDK instalado:
+To build locally with the Android SDK installed:
 
 ```sh
 gradle assembleRelease
 ```
 
-## Aviso
+## Disclaimer
 
-O app altera configurações do sistema com privilégios de root. Use por sua conta e risco.
+This app changes system settings with root privileges. Use it at your own risk.

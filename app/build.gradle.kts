@@ -16,8 +16,8 @@ android {
         applicationId = "com.refreshrate.app"
         minSdk = 31
         targetSdk = 34
-        versionCode = 5
-        versionName = "1.0.2"
+        versionCode = 6
+        versionName = "1.1"
     }
 
     signingConfigs {

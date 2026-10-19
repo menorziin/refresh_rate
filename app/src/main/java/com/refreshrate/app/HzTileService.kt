@@ -77,14 +77,14 @@ class HzTileService : TileService() {
             tile.state = Tile.STATE_INACTIVE
             tile.icon = Icon.createWithBitmap(textIcon("$current"))
             tile.label = "$current Hz"
-            tile.subtitle = "Limitado pela economia"
-            tile.contentDescription = "Taxa limitada a $current Hz pela economia de energia"
+            tile.subtitle = getString(R.string.tile_limited)
+            tile.contentDescription = getString(R.string.tile_description_limited, current)
         } else {
             tile.state = Tile.STATE_ACTIVE
             tile.icon = Icon.createWithBitmap(textIcon(if (preset.isDynamic) "AUTO" else "${preset.peak}"))
             tile.label = preset.label
-            tile.subtitle = "Taxa de atualização"
-            tile.contentDescription = "Taxa de atualização: ${preset.label}"
+            tile.subtitle = getString(R.string.tile_label)
+            tile.contentDescription = getString(R.string.tile_description, preset.label)
         }
         tile.updateTile()
     }
@@ -92,7 +92,7 @@ class HzTileService : TileService() {
     private fun showError() {
         val tile = qsTile ?: return
         tile.state = Tile.STATE_UNAVAILABLE
-        tile.label = "Sem root"
+        tile.label = getString(R.string.tile_no_root)
         tile.updateTile()
     }
 

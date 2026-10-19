@@ -11,7 +11,7 @@ object Root {
         }
         val output = process.inputStream.bufferedReader().readText()
         val code = process.waitFor()
-        if (code != 0) error("su terminou com código $code: $output")
+        if (code != 0) error("su exit $code: $output")
         output
     }
 

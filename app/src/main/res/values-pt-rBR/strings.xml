@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tela principal -->
+    <string name="now">Agora</string>
+    <string name="root_checking">Verificando root…</string>
+    <string name="root_ok">Root OK</string>
+    <string name="root_missing">Sem root — conceda acesso no Magisk/KernelSU</string>
+    <string name="dynamic_mode">Modo dinâmico %1$s</string>
+    <string name="section_fixed">Fixo</string>
+    <string name="section_dynamic">Dinâmico</string>
+    <string name="apply_on_boot">Reaplicar ao reiniciar</string>
+    <string name="force_surfaceflinger">Forçar via SurfaceFlinger (experimental)</string>
+    <string name="error_failed">Falhou: %1$s</string>
+    <string name="warning_power_save">Limitado a %1$d Hz pela economia de energia</string>
+    <string name="warning_not_applied">O sistema não aplicou %1$s</string>
+    <string name="tip_tile">Dica: adicione o bloco \"Taxa de atualização\" nas Configurações Rápidas para trocar sem abrir o app.</string>
+
+    <!-- Bloco das Configurações Rápidas -->
+    <string name="tile_label">Taxa de atualização</string>
+    <string name="tile_limited">Limitado pela economia</string>
+    <string name="tile_description">Taxa de atualização: %1$s</string>
+    <string name="tile_description_limited">Taxa limitada a %1$d Hz pela economia de energia</string>
+    <string name="tile_no_root">Sem root</string>
+</resources>

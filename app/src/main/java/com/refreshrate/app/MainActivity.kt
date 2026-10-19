@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -92,8 +93,8 @@ private fun HzScreen() {
         delay(1500)
         val sel = selected ?: return@LaunchedEffect
         warning = when {
-            powerSave && current < sel.peak -> "Limitado a $current Hz pela economia de energia"
-            !sel.isDynamic && current != sel.peak -> "O sistema não aplicou ${sel.label}"
+            powerSave && current < sel.peak -> ctx.getString(R.string.warning_power_save, current)
+            !sel.isDynamic && current != sel.peak -> ctx.getString(R.string.warning_not_applied, sel.label)
             else -> null
         }
     }
@@ -105,7 +106,7 @@ private fun HzScreen() {
             val result = withContext(Dispatchers.IO) { RefreshRate.apply(ctx, preset, forceSf) }
             busy = false
             result.onSuccess { selected = preset; message = null }
-                .onFailure { message = "Falhou: ${it.message}" }
+                .onFailure { message = ctx.getString(R.string.error_failed, it.message) }
         }
     }
 
@@ -121,14 +122,14 @@ private fun HzScreen() {
         Modifier.fillMaxSize().systemBarsPadding().padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("Refresh Rate", style = MaterialTheme.typography.headlineMedium)
+        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
 
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Agora", style = MaterialTheme.typography.labelLarge)
+                Text(stringResource(R.string.now), style = MaterialTheme.typography.labelLarge)
                 Text("$current Hz", fontSize = 56.sp, fontWeight = FontWeight.Bold)
                 selected?.takeIf { it.isDynamic }?.let {
-                    Text("Modo dinâmico ${it.label}", style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(R.string.dynamic_mode, it.label), style = MaterialTheme.typography.bodyMedium)
                 }
                 warning?.let {
                     Text(
@@ -140,9 +141,9 @@ private fun HzScreen() {
                 }
                 Text(
                     when (hasRoot) {
-                        null -> "Verificando root…"
-                        true -> "Root OK"
-                        false -> "Sem root — conceda acesso no Magisk/KernelSU"
+                        null -> stringResource(R.string.root_checking)
+                        true -> stringResource(R.string.root_ok)
+                        false -> stringResource(R.string.root_missing)
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = if (hasRoot == false) MaterialTheme.colorScheme.error
@@ -151,24 +152,24 @@ private fun HzScreen() {
             }
         }
 
-        Text("Fixo", style = MaterialTheme.typography.titleSmall)
+        Text(stringResource(R.string.section_fixed), style = MaterialTheme.typography.titleSmall)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             presets.filterNot { it.isDynamic }.forEach { PresetButton(it, Modifier.weight(1f)) }
         }
 
-        Text("Dinâmico", style = MaterialTheme.typography.titleSmall)
+        Text(stringResource(R.string.section_dynamic), style = MaterialTheme.typography.titleSmall)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             presets.filter { it.isDynamic }.forEach { PresetButton(it, Modifier.weight(1f)) }
         }
 
-        SettingRow("Reaplicar ao reiniciar", applyOnBoot) { applyOnBoot = it; prefs.applyOnBoot = it }
-        SettingRow("Forçar via SurfaceFlinger (experimental)", forceSf) { forceSf = it; prefs.forceSf = it }
+        SettingRow(stringResource(R.string.apply_on_boot), applyOnBoot) { applyOnBoot = it; prefs.applyOnBoot = it }
+        SettingRow(stringResource(R.string.force_surfaceflinger), forceSf) { forceSf = it; prefs.forceSf = it }
 
         message?.let { Text(it, color = MaterialTheme.colorScheme.error) }
 
         Spacer(Modifier.weight(1f))
         Text(
-            "Dica: adicione o bloco \"Taxa de atualização\" nas Configurações Rápidas para trocar sem abrir o app.",
+            stringResource(R.string.tip_tile),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
