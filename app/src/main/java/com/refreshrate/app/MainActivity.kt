@@ -1,9 +1,14 @@
 package com.refreshrate.app
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.hardware.display.DisplayManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.PowerManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -15,9 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -62,6 +70,34 @@ private fun HzScreen() {
         onDispose { dm.unregisterDisplayListener(listener) }
     }
 
+    // Acompanha a economia de energia, que limita a taxa por conta própria.
+    val pm = remember { ctx.getSystemService(PowerManager::class.java) }
+    var powerSave by remember { mutableStateOf(pm.isPowerSaveMode) }
+    DisposableEffect(Unit) {
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(c: Context, i: Intent) { powerSave = pm.isPowerSaveMode }
+        }
+        ContextCompat.registerReceiver(
+            ctx, receiver, IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED),
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
+        onDispose { ctx.unregisterReceiver(receiver) }
+    }
+
+    // Aviso quando a taxa real difere da escolhida. Espera o painel assentar
+    // antes de avaliar, para não piscar durante uma troca.
+    var warning by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(selected, current, powerSave) {
+        warning = null
+        delay(1500)
+        val sel = selected ?: return@LaunchedEffect
+        warning = when {
+            powerSave && current < sel.peak -> "Limitado a $current Hz pela economia de energia"
+            !sel.isDynamic && current != sel.peak -> "O sistema não aplicou ${sel.label}"
+            else -> null
+        }
+    }
+
     fun choose(preset: Preset) {
         if (busy) return
         busy = true
@@ -93,6 +129,14 @@ private fun HzScreen() {
                 Text("$current Hz", fontSize = 56.sp, fontWeight = FontWeight.Bold)
                 selected?.takeIf { it.isDynamic }?.let {
                     Text("Modo dinâmico ${it.label}", style = MaterialTheme.typography.bodyMedium)
+                }
+                warning?.let {
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        textAlign = TextAlign.Center,
+                    )
                 }
                 Text(
                     when (hasRoot) {

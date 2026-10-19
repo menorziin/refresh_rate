@@ -1,5 +1,9 @@
 package com.refreshrate.app
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -8,8 +12,10 @@ import android.graphics.Typeface
 import android.graphics.drawable.Icon
 import android.os.Handler
 import android.os.Looper
+import android.os.PowerManager
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import androidx.core.content.ContextCompat
 
 /**
  * Bloco das Configurações Rápidas: mostra o preset ativo e, a cada toque,
@@ -22,9 +28,26 @@ class HzTileService : TileService() {
 
     private val main = Handler(Looper.getMainLooper())
 
+    // Atualiza o bloco quando a economia de energia liga/desliga com o painel aberto.
+    // O painel demora um instante para trocar de modo, por isso o atraso.
+    private val powerSaveReceiver = object : BroadcastReceiver() {
+        override fun onReceive(c: Context, i: Intent) { main.postDelayed({ refresh() }, 600) }
+    }
+
     override fun onTileAdded() = refresh()
 
-    override fun onStartListening() = refresh()
+    override fun onStartListening() {
+        ContextCompat.registerReceiver(
+            this, powerSaveReceiver, IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED),
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
+        refresh()
+    }
+
+    override fun onStopListening() {
+        runCatching { unregisterReceiver(powerSaveReceiver) }
+        main.removeCallbacksAndMessages(null)
+    }
 
     override fun onClick() {
         val presets = RefreshRate.presets(this)
@@ -46,11 +69,23 @@ class HzTileService : TileService() {
 
     private fun show(preset: Preset) {
         val tile = qsTile ?: return
-        tile.state = Tile.STATE_ACTIVE
-        tile.icon = Icon.createWithBitmap(textIcon(if (preset.isDynamic) "AUTO" else "${preset.peak}"))
-        tile.label = preset.label
-        tile.subtitle = "Taxa de atualização"
-        tile.contentDescription = "Taxa de atualização: ${preset.label}"
+        val current = RefreshRate.current(this)
+        val limited = getSystemService(PowerManager::class.java).isPowerSaveMode && current < preset.peak
+
+        if (limited) {
+            // Mostra a taxa real e deixa o bloco apagado: a escolha está suspensa pela economia.
+            tile.state = Tile.STATE_INACTIVE
+            tile.icon = Icon.createWithBitmap(textIcon("$current"))
+            tile.label = "$current Hz"
+            tile.subtitle = "Limitado pela economia"
+            tile.contentDescription = "Taxa limitada a $current Hz pela economia de energia"
+        } else {
+            tile.state = Tile.STATE_ACTIVE
+            tile.icon = Icon.createWithBitmap(textIcon(if (preset.isDynamic) "AUTO" else "${preset.peak}"))
+            tile.label = preset.label
+            tile.subtitle = "Taxa de atualização"
+            tile.contentDescription = "Taxa de atualização: ${preset.label}"
+        }
         tile.updateTile()
     }
 
