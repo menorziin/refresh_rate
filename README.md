@@ -1,19 +1,29 @@
 <p align="center">
-  <b>Marble Hz</b><br>
-  Troque a taxa de atualização do Poco F5 entre 60, 90 e 120 Hz com um toque.
+  <b>Refresh Rate</b><br>
+  Troque a taxa de atualização da tela entre 60, 90 e 120 Hz com um toque.
 </p>
 
 ---
 
-O **Marble Hz** é um app Android para quem tem root e quer controlar a taxa de atualização da tela sem depender das opções limitadas da HyperOS. Foi feito para o **Poco F5** (codinome *marble*), mas lê as taxas que o próprio painel suporta, então tende a funcionar em outros aparelhos.
+O **Refresh Rate** é um app Android para quem tem root e quer controlar a taxa de atualização da tela com um toque. Ele lê as taxas que o próprio painel suporta, então não depende de um aparelho específico.
+
+## Compatibilidade
+
+| ROM | Status |
+| --- | --- |
+| AOSP e ROMs baseadas em AOSP | ✅ Funciona |
+| HyperOS / MIUI | ⚠️ Não testado |
+| Outras ROMs de fabricante (One UI, ColorOS etc.) | ⚠️ Não testado |
+
+Testado em um Poco F5 com ROM AOSP. Em ROMs de fabricante, o sistema pode ignorar ou sobrescrever a taxa escolhida. Se testar em alguma, abra uma issue contando o resultado.
 
 ## Recursos
 
 - **Taxas fixas**: 60, 90 ou 120 Hz, conforme o que o painel suporta.
-- **Modo dinâmico (60–120 Hz)**: o sistema varia a taxa conforme o uso.
+- **Modo dinâmico**: o sistema varia entre a menor e a maior taxa conforme o uso.
 - **Bloco nas Configurações Rápidas**: mostra a taxa ativa e alterna a cada toque, sem abrir o app.
 - **Reaplicar ao reiniciar**: restaura a última escolha depois do boot.
-- **Forçar via SurfaceFlinger** (experimental): trava o modo direto no compositor quando a HyperOS insiste em voltar para 60 Hz.
+- **Forçar via SurfaceFlinger** (experimental): trava o modo direto no compositor quando o sistema insiste em voltar para outra taxa.
 - Material You, tema claro/escuro e ícone temático.
 
 ## Requisitos
@@ -30,13 +40,14 @@ O **Marble Hz** é um app Android para quem tem root e quer controlar a taxa de 
 
 ## Como funciona
 
-O app executa comandos via `su` e grava as chaves de taxa usadas pelo AOSP e pela HyperOS:
+O app executa comandos via `su` e grava as chaves de taxa do AOSP:
 
 ```sh
 settings put system min_refresh_rate  <hz>
 settings put system peak_refresh_rate <hz>
-settings put system user_refresh_rate <hz>   # chave da MIUI/HyperOS
 ```
+
+Ele também grava `user_refresh_rate`, chave usada por algumas ROMs de fabricante. No AOSP ela é ignorada; está ali por compatibilidade, sem garantia de funcionar.
 
 No modo **Forçar via SurfaceFlinger**, ele também envia:
 

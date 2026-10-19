@@ -1,4 +1,4 @@
-package com.marble.refreshrate
+package com.refreshrate.app
 
 import android.hardware.display.DisplayManager
 import android.os.Bundle
@@ -85,7 +85,7 @@ private fun HzScreen() {
         Modifier.fillMaxSize().systemBarsPadding().padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("Marble Hz", style = MaterialTheme.typography.headlineMedium)
+        Text("Refresh Rate", style = MaterialTheme.typography.headlineMedium)
 
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {

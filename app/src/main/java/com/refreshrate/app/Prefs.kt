@@ -1,4 +1,4 @@
-package com.marble.refreshrate
+package com.refreshrate.app
 
 import android.content.Context
 

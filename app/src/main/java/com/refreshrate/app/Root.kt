@@ -1,4 +1,4 @@
-package com.marble.refreshrate
+package com.refreshrate.app
 
 /** Executa comandos como root via `su`. Sempre chame fora da main thread. */
 object Root {

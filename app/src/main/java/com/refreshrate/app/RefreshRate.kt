@@ -1,4 +1,4 @@
-package com.marble.refreshrate
+package com.refreshrate.app
 
 import android.content.ComponentName
 import android.content.Context
@@ -60,8 +60,9 @@ object RefreshRate {
     }
 
     /**
-     * Aplica o preset. Usa as chaves do AOSP (peak/min_refresh_rate) e a da MIUI/HyperOS
-     * (user_refresh_rate), assim funciona tanto na ROM stock do Poco F5 quanto em custom ROMs.
+     * Aplica o preset gravando as chaves do AOSP (min/peak_refresh_rate).
+     * A chave user_refresh_rate é usada por algumas ROMs de fabricante (ex.: MIUI)
+     * e é ignorada no AOSP; fica por compatibilidade, sem garantia de funcionar.
      */
     fun apply(ctx: Context, preset: Preset, forceSurfaceFlinger: Boolean): Result<String> {
         val cmds = mutableListOf(

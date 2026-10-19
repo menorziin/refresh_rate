@@ -9,11 +9,11 @@ plugins {
 val signingStoreFile: String? = System.getenv("SIGNING_STORE_FILE")
 
 android {
-    namespace = "com.marble.refreshrate"
+    namespace = "com.refreshrate.app"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.marble.refreshrate"
+        applicationId = "com.refreshrate.app"
         minSdk = 31
         targetSdk = 34
         versionCode = 3

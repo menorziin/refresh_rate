@@ -1,4 +1,4 @@
-package com.marble.refreshrate
+package com.refreshrate.app
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -13,7 +13,7 @@ class BootReceiver : BroadcastReceiver() {
 
         val pending = goAsync()
         Thread {
-            // A MIUI às vezes sobrescreve a taxa logo após o boot; esperar um pouco evita isso.
+            // Algumas ROMs sobrescrevem a taxa logo após o boot; esperar um pouco evita isso.
             Thread.sleep(15_000)
             RefreshRate.apply(context, preset, prefs.forceSf)
             pending.finish()
