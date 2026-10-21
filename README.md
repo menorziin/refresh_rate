@@ -9,7 +9,7 @@
 
 ---
 
-**Refresh Rate** is a root app for Android that lets you control the display refresh rate with one tap. It reads the rates your panel actually supports, so it isn't tied to a specific device.
+**Refresh Rate** is an Android app that lets you control the display refresh rate with one tap, using root or, without root, [Shizuku](https://shizuku.rikka.app/) (ADB). It reads the rates your panel actually supports, so it isn't tied to a specific device.
 
 ## Compatibility
 
@@ -35,18 +35,28 @@ Tested on a Poco F5 running an AOSP ROM. On OEM ROMs the system may ignore or ov
 ## Requirements
 
 - Android 12 or newer
-- Root (Magisk, KernelSU or APatch)
+- Root (Magisk, KernelSU or APatch) **or** [Shizuku](https://shizuku.rikka.app/) for use without root
 
 ## Installation
 
 1. Download the latest APK from [Releases](../../releases).
 2. Install and open it.
-3. Grant root access when your root manager asks.
+3. Grant access: root, when your root manager asks, or Shizuku, by tapping **Grant** in the app.
 4. (Optional) Edit Quick Settings and add the **Refresh rate** tile.
+
+## Using without root (Shizuku)
+
+Shizuku runs the app's commands with the same privileges as `adb shell`, so root isn't needed.
+
+1. Install [Shizuku](https://shizuku.rikka.app/download/).
+2. Start it by following the [official guide](https://shizuku.rikka.app/guide/setup/): on Android 11+ through **Wireless debugging**, with no computer needed; or from a computer over ADB.
+3. Open Refresh Rate and tap **Grant**.
+
+Shizuku started over ADB stops when the phone reboots, so start it again before changing the rate. On AOSP the chosen rate stays saved by the system across reboots. **Reapply on boot** only works with root or with Shizuku started by root.
 
 ## How it works
 
-The app runs commands through `su` and writes the AOSP refresh rate keys:
+The app runs commands through `su` (root) or Shizuku (shell user) and writes the AOSP refresh rate keys:
 
 ```sh
 settings put system min_refresh_rate  <hz>

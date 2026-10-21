@@ -9,7 +9,7 @@
 
 ---
 
-O **Refresh Rate** é um app Android para quem tem root e quer controlar a taxa de atualização da tela com um toque. Ele lê as taxas que o próprio painel suporta, então não depende de um aparelho específico.
+O **Refresh Rate** é um app Android para controlar a taxa de atualização da tela com um toque, usando root ou, sem root, o [Shizuku](https://shizuku.rikka.app/) (ADB). Ele lê as taxas que o próprio painel suporta, então não depende de um aparelho específico.
 
 ## Compatibilidade
 
@@ -35,18 +35,28 @@ Testado em um Poco F5 com ROM AOSP. Em ROMs de fabricante, o sistema pode ignora
 ## Requisitos
 
 - Android 12 ou superior
-- Root (Magisk, KernelSU ou APatch)
+- Root (Magisk, KernelSU ou APatch) **ou** [Shizuku](https://shizuku.rikka.app/) para usar sem root
 
 ## Instalação
 
 1. Baixe o APK mais recente em [Releases](../../releases).
 2. Instale e abra o app.
-3. Conceda acesso root quando o gerenciador pedir.
+3. Conceda o acesso: root, quando o gerenciador pedir, ou Shizuku, tocando em **Conceder** no app.
 4. (Opcional) Edite as Configurações Rápidas e adicione o bloco **Taxa de atualização**.
+
+## Usar sem root (Shizuku)
+
+O Shizuku executa os comandos do app com os mesmos privilégios do `adb shell`, então o root não é necessário.
+
+1. Instale o [Shizuku](https://shizuku.rikka.app/download/).
+2. Inicie-o seguindo o [guia oficial](https://shizuku.rikka.app/guide/setup/): no Android 11+ pela **Depuração sem fio**, sem precisar de computador; ou por um computador via ADB.
+3. Abra o Refresh Rate e toque em **Conceder**.
+
+O Shizuku iniciado via ADB para quando o celular reinicia, então inicie-o de novo antes de trocar a taxa. No AOSP, a taxa escolhida continua salva pelo sistema depois de reiniciar. **Reaplicar ao reiniciar** só funciona com root ou com o Shizuku iniciado via root.
 
 ## Como funciona
 
-O app executa comandos via `su` e grava as chaves de taxa do AOSP:
+O app executa comandos via `su` (root) ou Shizuku (usuário shell) e grava as chaves de taxa do AOSP:
 
 ```sh
 settings put system min_refresh_rate  <hz>

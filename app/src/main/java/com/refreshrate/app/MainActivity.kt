@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.display.DisplayManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -25,6 +26,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import rikka.shizuku.Shizuku
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -51,13 +54,30 @@ private fun HzScreen() {
 
     var current by remember { mutableIntStateOf(RefreshRate.current(ctx)) }
     var selected by remember { mutableStateOf(prefs.last) }
-    var hasRoot by remember { mutableStateOf<Boolean?>(null) }
+    var access by remember { mutableStateOf<Access?>(null) }
+    val hasAccess = access == Access.ROOT || access == Access.SHIZUKU
     var busy by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf<String?>(null) }
     var applyOnBoot by remember { mutableStateOf(prefs.applyOnBoot) }
     var forceSf by remember { mutableStateOf(prefs.forceSf) }
 
-    LaunchedEffect(Unit) { hasRoot = withContext(Dispatchers.IO) { Root.isAvailable() } }
+    fun recheckAccess() {
+        scope.launch { access = withContext(Dispatchers.IO) { Shell.detect(ctx) } }
+    }
+
+    // Reavalia ao voltar para o app (ex.: depois de iniciar o Shizuku). Se o acesso
+    // já está ok, não repete, para não abrir o pedido de root a cada retorno.
+    LifecycleResumeEffect(hasAccess) {
+        if (!hasAccess) recheckAccess()
+        onPauseOrDispose { }
+    }
+
+    // Resposta ao pedido de permissão do Shizuku.
+    DisposableEffect(Unit) {
+        val listener = Shizuku.OnRequestPermissionResultListener { _, _ -> recheckAccess() }
+        Shizuku.addRequestPermissionResultListener(listener)
+        onDispose { Shizuku.removeRequestPermissionResultListener(listener) }
+    }
 
     // Atualiza a taxa exibida em tempo real quando o painel muda de modo.
     DisposableEffect(Unit) {
@@ -112,7 +132,7 @@ private fun HzScreen() {
 
     @Composable
     fun PresetButton(preset: Preset, modifier: Modifier) {
-        val enabled = hasRoot == true && !busy
+        val enabled = hasAccess && !busy
         val content: @Composable RowScope.() -> Unit = { Text(preset.label, maxLines = 1) }
         if (preset == selected) Button({ choose(preset) }, modifier.height(56.dp), enabled = enabled, content = content)
         else OutlinedButton({ choose(preset) }, modifier.height(56.dp), enabled = enabled, content = content)
@@ -139,16 +159,7 @@ private fun HzScreen() {
                         textAlign = TextAlign.Center,
                     )
                 }
-                Text(
-                    when (hasRoot) {
-                        null -> stringResource(R.string.root_checking)
-                        true -> stringResource(R.string.root_ok)
-                        false -> stringResource(R.string.root_missing)
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (hasRoot == false) MaterialTheme.colorScheme.error
-                    else MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                AccessStatus(access)
             }
         }
 
@@ -173,6 +184,40 @@ private fun HzScreen() {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+}
+
+@Composable
+private fun AccessStatus(access: Access?) {
+    val ctx = LocalContext.current
+    val ok = access == Access.ROOT || access == Access.SHIZUKU
+    Text(
+        stringResource(
+            when (access) {
+                null -> R.string.access_checking
+                Access.ROOT -> R.string.access_root
+                Access.SHIZUKU -> R.string.access_shizuku
+                Access.SHIZUKU_NEEDS_PERMISSION -> R.string.access_shizuku_permission
+                Access.SHIZUKU_NOT_RUNNING -> R.string.access_shizuku_not_running
+                Access.NONE -> R.string.access_none
+            },
+        ),
+        style = MaterialTheme.typography.bodySmall,
+        textAlign = TextAlign.Center,
+        color = if (ok || access == null) MaterialTheme.colorScheme.onSurfaceVariant
+        else MaterialTheme.colorScheme.error,
+    )
+    when (access) {
+        Access.SHIZUKU_NEEDS_PERMISSION -> TextButton({ runCatching { Shizuku.requestPermission(1) } }) {
+            Text(stringResource(R.string.action_grant))
+        }
+        Access.SHIZUKU_NOT_RUNNING -> TextButton({
+            ctx.packageManager.getLaunchIntentForPackage(Shell.SHIZUKU_PACKAGE)?.let { ctx.startActivity(it) }
+        }) { Text(stringResource(R.string.action_open_shizuku)) }
+        Access.NONE -> TextButton({
+            runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(Shell.SHIZUKU_SETUP_URL))) }
+        }) { Text(stringResource(R.string.action_setup_guide)) }
+        else -> {}
     }
 }
 

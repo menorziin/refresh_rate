@@ -73,7 +73,7 @@ object RefreshRate {
         if (forceSurfaceFlinger && !preset.isDynamic) {
             modeIndex(ctx, preset.peak)?.let { cmds += "service call SurfaceFlinger 1035 i32 $it" }
         }
-        return Root.run(*cmds.toTypedArray()).onSuccess {
+        return Shell.run(ctx, *cmds.toTypedArray()).onSuccess {
             Prefs(ctx).last = preset
             // Pede ao sistema para atualizar o bloco das Configurações Rápidas.
             TileService.requestListeningState(ctx, ComponentName(ctx, HzTileService::class.java))

@@ -2,9 +2,15 @@
 <resources>
     <!-- Tela principal -->
     <string name="now">Agora</string>
-    <string name="root_checking">Verificando root…</string>
-    <string name="root_ok">Root OK</string>
-    <string name="root_missing">Sem root — conceda acesso no Magisk/KernelSU</string>
+    <string name="access_checking">Verificando acesso…</string>
+    <string name="access_root">Root OK</string>
+    <string name="access_shizuku">Shizuku OK</string>
+    <string name="access_shizuku_permission">O Shizuku precisa de permissão</string>
+    <string name="access_shizuku_not_running">O Shizuku não está em execução — inicie-o no app do Shizuku</string>
+    <string name="access_none">Sem acesso — requer root ou Shizuku (ADB)</string>
+    <string name="action_grant">Conceder</string>
+    <string name="action_open_shizuku">Abrir Shizuku</string>
+    <string name="action_setup_guide">Como configurar o Shizuku</string>
     <string name="dynamic_mode">Modo dinâmico %1$s</string>
     <string name="section_fixed">Fixo</string>
     <string name="section_dynamic">Dinâmico</string>
@@ -20,5 +26,5 @@
     <string name="tile_limited">Limitado pela economia</string>
     <string name="tile_description">Taxa de atualização: %1$s</string>
     <string name="tile_description_limited">Taxa limitada a %1$d Hz pela economia de energia</string>
-    <string name="tile_no_root">Sem root</string>
+    <string name="tile_no_access">Sem acesso</string>
 </resources>

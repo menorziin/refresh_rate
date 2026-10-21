@@ -16,8 +16,8 @@ android {
         applicationId = "com.refreshrate.app"
         minSdk = 31
         targetSdk = 34
-        versionCode = 6
-        versionName = "1.1"
+        versionCode = 7
+        versionName = "1.2"
     }
 
     signingConfigs {
@@ -35,7 +35,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
         }
     }
@@ -57,4 +57,9 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
+
+    // Shizuku: acesso com privilégios do ADB (usuário shell), sem root
+    val shizuku = "13.1.5"
+    implementation("dev.rikka.shizuku:api:$shizuku")
+    implementation("dev.rikka.shizuku:provider:$shizuku")
 }

@@ -92,7 +92,7 @@ class HzTileService : TileService() {
     private fun showError() {
         val tile = qsTile ?: return
         tile.state = Tile.STATE_UNAVAILABLE
-        tile.label = getString(R.string.tile_no_root)
+        tile.label = getString(R.string.tile_no_access)
         tile.updateTile()
     }
 

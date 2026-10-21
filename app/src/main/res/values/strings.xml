@@ -4,9 +4,15 @@
 
     <!-- Main screen -->
     <string name="now">Now</string>
-    <string name="root_checking">Checking root…</string>
-    <string name="root_ok">Root OK</string>
-    <string name="root_missing">No root — grant access in Magisk/KernelSU</string>
+    <string name="access_checking">Checking access…</string>
+    <string name="access_root">Root OK</string>
+    <string name="access_shizuku">Shizuku OK</string>
+    <string name="access_shizuku_permission">Shizuku needs permission</string>
+    <string name="access_shizuku_not_running">Shizuku isn\'t running — start it in the Shizuku app</string>
+    <string name="access_none">No access — requires root or Shizuku (ADB)</string>
+    <string name="action_grant">Grant</string>
+    <string name="action_open_shizuku">Open Shizuku</string>
+    <string name="action_setup_guide">How to set up Shizuku</string>
     <string name="dynamic_mode">Dynamic mode %1$s</string>
     <string name="section_fixed">Fixed</string>
     <string name="section_dynamic">Dynamic</string>
@@ -22,5 +28,5 @@
     <string name="tile_limited">Limited by battery saver</string>
     <string name="tile_description">Refresh rate: %1$s</string>
     <string name="tile_description_limited">Refresh rate limited to %1$d Hz by battery saver</string>
-    <string name="tile_no_root">No root</string>
+    <string name="tile_no_access">No access</string>
 </resources>
