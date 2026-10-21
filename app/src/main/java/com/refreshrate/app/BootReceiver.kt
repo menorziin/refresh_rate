@@ -7,6 +7,9 @@ import android.content.Intent
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != Intent.ACTION_BOOT_COMPLETED) return
+        // A sobreposição não depende de root nem de Shizuku.
+        OverlayService.sync(context)
+
         val prefs = Prefs(context)
         val preset = prefs.last ?: return
         if (!prefs.applyOnBoot) return

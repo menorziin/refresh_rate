@@ -26,6 +26,7 @@ Tested on a Poco F5 running an AOSP ROM. On OEM ROMs the system may ignore or ov
 - **Fixed rates**: 60, 90 or 120 Hz, depending on what the panel supports.
 - **Dynamic mode**: the system moves between the lowest and highest rate as needed.
 - **Quick Settings tile**: shows the active rate on its icon and cycles through rates on each tap.
+- **Live overlay**: a small draggable label over any app showing the panel's current rate; toggle it in the app or hide it from its notification. Needs only the "Display over other apps" permission.
 - **Battery saver aware**: shows when battery saver is capping the rate, both in the app and on the tile.
 - **Reapply on boot**: restores your last choice after a restart.
 - **Force via SurfaceFlinger** (experimental): locks the mode directly in the compositor when the system keeps switching it back.

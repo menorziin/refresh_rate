@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -60,6 +61,29 @@ private fun HzScreen() {
     var message by remember { mutableStateOf<String?>(null) }
     var applyOnBoot by remember { mutableStateOf(prefs.applyOnBoot) }
     var forceSf by remember { mutableStateOf(prefs.forceSf) }
+    var overlayOn by remember { mutableStateOf(prefs.overlayEnabled) }
+
+    // Ao voltar (ex.: da tela de permissão ou depois de ocultar pela notificação),
+    // confirma se a sobreposição pode e deve estar ligada.
+    LifecycleResumeEffect(Unit) {
+        if (prefs.overlayEnabled && !Settings.canDrawOverlays(ctx)) prefs.overlayEnabled = false
+        overlayOn = prefs.overlayEnabled
+        OverlayService.sync(ctx)
+        onPauseOrDispose { }
+    }
+
+    fun setOverlay(on: Boolean) {
+        prefs.overlayEnabled = on
+        if (on && !Settings.canDrawOverlays(ctx)) {
+            // Pede a permissão; o efeito acima liga a sobreposição na volta, se concedida.
+            ctx.startActivity(
+                Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${ctx.packageName}")),
+            )
+            return
+        }
+        overlayOn = on
+        OverlayService.sync(ctx)
+    }
 
     fun recheckAccess() {
         scope.launch { access = withContext(Dispatchers.IO) { Shell.detect(ctx) } }
@@ -175,6 +199,7 @@ private fun HzScreen() {
 
         SettingRow(stringResource(R.string.apply_on_boot), applyOnBoot) { applyOnBoot = it; prefs.applyOnBoot = it }
         SettingRow(stringResource(R.string.force_surfaceflinger), forceSf) { forceSf = it; prefs.forceSf = it }
+        SettingRow(stringResource(R.string.overlay_toggle), overlayOn) { setOverlay(it) }
 
         message?.let { Text(it, color = MaterialTheme.colorScheme.error) }
 

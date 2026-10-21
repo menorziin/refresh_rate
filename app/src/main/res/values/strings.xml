@@ -21,6 +21,7 @@
     <string name="error_failed">Failed: %1$s</string>
     <string name="warning_power_save">Limited to %1$d Hz by battery saver</string>
     <string name="warning_not_applied">The system didn\'t apply %1$s</string>
+    <string name="overlay_toggle">Show live refresh rate overlay</string>
     <string name="tip_tile">Tip: add the \"Refresh rate\" tile to Quick Settings to switch without opening the app.</string>
 
     <!-- Quick Settings tile -->
@@ -29,4 +30,10 @@
     <string name="tile_description">Refresh rate: %1$s</string>
     <string name="tile_description_limited">Refresh rate limited to %1$d Hz by battery saver</string>
     <string name="tile_no_access">No access</string>
+
+    <!-- Overlay -->
+    <string name="overlay_channel">Refresh rate overlay</string>
+    <string name="overlay_notification_title">Showing refresh rate overlay</string>
+    <string name="overlay_notification_text">Drag the label to move it. Tap to open the app.</string>
+    <string name="overlay_stop">Hide</string>
 </resources>

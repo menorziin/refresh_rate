@@ -26,6 +26,7 @@ Testado em um Poco F5 com ROM AOSP. Em ROMs de fabricante, o sistema pode ignora
 - **Taxas fixas**: 60, 90 ou 120 Hz, conforme o que o painel suporta.
 - **Modo dinâmico**: o sistema varia entre a menor e a maior taxa conforme o uso.
 - **Bloco nas Configurações Rápidas**: mostra a taxa ativa no ícone e alterna a cada toque.
+- **Sobreposição em tempo real**: uma etiqueta pequena e arrastável sobre qualquer app, mostrando a taxa atual do painel; liga e desliga no app ou pela notificação. Precisa só da permissão "Sobrepor a outros apps".
 - **Respeita a economia de energia**: avisa quando ela limita a taxa, no app e no bloco.
 - **Reaplicar ao reiniciar**: restaura a última escolha depois do boot.
 - **Forçar via SurfaceFlinger** (experimental): trava o modo direto no compositor quando o sistema insiste em voltar para outra taxa.

@@ -19,6 +19,7 @@
     <string name="error_failed">Falhou: %1$s</string>
     <string name="warning_power_save">Limitado a %1$d Hz pela economia de energia</string>
     <string name="warning_not_applied">O sistema não aplicou %1$s</string>
+    <string name="overlay_toggle">Mostrar a taxa em tempo real sobre a tela</string>
     <string name="tip_tile">Dica: adicione o bloco \"Taxa de atualização\" nas Configurações Rápidas para trocar sem abrir o app.</string>
 
     <!-- Bloco das Configurações Rápidas -->
@@ -27,4 +28,10 @@
     <string name="tile_description">Taxa de atualização: %1$s</string>
     <string name="tile_description_limited">Taxa limitada a %1$d Hz pela economia de energia</string>
     <string name="tile_no_access">Sem acesso</string>
+
+    <!-- Sobreposição -->
+    <string name="overlay_channel">Sobreposição da taxa</string>
+    <string name="overlay_notification_title">Mostrando a taxa de atualização</string>
+    <string name="overlay_notification_text">Arraste a etiqueta para movê-la. Toque para abrir o app.</string>
+    <string name="overlay_stop">Ocultar</string>
 </resources>

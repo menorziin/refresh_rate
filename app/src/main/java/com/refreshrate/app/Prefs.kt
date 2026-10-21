@@ -17,6 +17,19 @@ class Prefs(ctx: Context) {
         get() = sp.getBoolean("force_sf", false)
         set(v) = sp.edit().putBoolean("force_sf", v).apply()
 
+    var overlayEnabled: Boolean
+        get() = sp.getBoolean("overlay", false)
+        set(v) = sp.edit().putBoolean("overlay", v).apply()
+
+    /** Posição da sobreposição na tela, em pixels (-1 = posição padrão). */
+    var overlayX: Int
+        get() = sp.getInt("overlay_x", -1)
+        set(v) = sp.edit().putInt("overlay_x", v).apply()
+
+    var overlayY: Int
+        get() = sp.getInt("overlay_y", -1)
+        set(v) = sp.edit().putInt("overlay_y", v).apply()
+
     /** Último meio de acesso que funcionou, para não esperar à toa pelo que não está em uso. */
     var lastBackend: Backend?
         get() = sp.getString("backend", null)?.let { runCatching { Backend.valueOf(it) }.getOrNull() }
